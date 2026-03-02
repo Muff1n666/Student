@@ -15,14 +15,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+#Функция запуска планировщика уведомлений
 def start_scheduler():
-    """Запуск планировщика уведомлений в отдельном потоке"""
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(reminder_scheduler())
 
+#Главная функция
 def main():
-    """Точка входа для запуска бота"""
     logger.info("🚀 Запуск Telegram бота...")
     
     #Запуск планировщика уведомлений в отдельном потоке
