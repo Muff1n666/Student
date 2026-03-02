@@ -1,2 +1,26 @@
-__pycache__/
+# Python
+__pycache__
+*.pyc
 config.py
+.env
+
+# Базы данных
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Node.js (для mini-app)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Редакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
