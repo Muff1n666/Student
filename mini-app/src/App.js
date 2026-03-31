@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import NotesList from './components/NotesList';
+import Calculator from './components/Calculator';
 import { useTelegramId } from './hooks/useTelegramId';
 import api from './services/api';
 import './index.css';
@@ -67,7 +68,7 @@ function App() {
   const renderContent = () => {
     switch (activeSection) {
       case 'calculator':
-        return <Placeholder title="Калькулятор среднего балла" icon="🧮" />;
+        return <Calculator />;
       case 'stats':
         return <Placeholder title="Статистика успеваемости" icon="📊" />;
       case 'settings':
