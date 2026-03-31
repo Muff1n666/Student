@@ -6,18 +6,23 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+WEB_APP_URL = "https://student-lovat-alpha.vercel.app"
+
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /start"""
     user = update.effective_user
     
-    # Сохраняем пользователя в БД
     db = SessionLocal()
     try:
-        # Проверяем, есть ли уже такой пользователь
         db_user = db.query(User).filter(User.telegram_id == user.id).first()
         
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("📱 Открыть приложение", web_app={
+                "url": WEB_APP_URL}
+            )]
+        ])
+        
         if not db_user:
-            # Создаем нового пользователя
             db_user = User(
                 telegram_id=user.id,
                 username=user.username,
@@ -31,15 +36,14 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 f"👋 Привет, {user.first_name}!\n\n"
                 f"Ты успешно зарегистрирован в системе!\n\n"
-                f"📋 Открой веб-приложение по ссылке:\n"
-                f"http://localhost:3000/?user_id={user.id}\n\n"
-                f"Скопируй эту ссылку в браузер и добавь в закладки!"
+                f"Нажми кнопку ниже чтобы открыть приложение!",
+                reply_markup=keyboard
             )
         else:
             await update.message.reply_text(
                 f"👋 С возвращением, {user.first_name}!\n\n"
-                f"📋 Твоя ссылка на приложение:\n"
-                f"http://localhost:3000/?user_id={user.id}"
+                f"Нажми кнопку ниже чтобы открыть приложение!",
+                reply_markup=keyboard
             )
         
     except Exception as e:
