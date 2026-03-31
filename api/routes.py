@@ -55,6 +55,12 @@ async def create_note(note: api_models.NoteCreate, db: Session = Depends(get_db)
     
     print(f"✅ Заметка создана с ID: {db_note.id}")
     
+    await send_note_created_notification(
+        telegram_id=user.telegram_id,
+        note_title=db_note.title,
+        note_date=db_note.note_date
+    )
+    
     return db_note
 
 @router.get("/notes/", response_model=List[api_models.NoteResponse])

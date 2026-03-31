@@ -10,12 +10,14 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик команды /start"""
     user = update.effective_user
     
-    #Регистрируем пользователя в БД, если его еще нет
+    # Сохраняем пользователя в БД
     db = SessionLocal()
     try:
+        # Проверяем, есть ли уже такой пользователь
         db_user = db.query(User).filter(User.telegram_id == user.id).first()
         
         if not db_user:
+            # Создаем нового пользователя
             db_user = User(
                 telegram_id=user.id,
                 username=user.username,
