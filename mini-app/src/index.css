@@ -13,6 +13,7 @@
   --text-secondary: #64748b;
   --border: #e2e8f0;
   --success: #10b981;
+  --warning: #f59e0b;
   --danger: #ef4444;
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --radius: 16px;
@@ -260,6 +261,12 @@ body {
 .note-test {
   border-left-color: var(--primary);
 }
+
+.note-practice {
+  border-left-color: var(--warning);
+}
+
+
 
 .note-header {
   display: flex;

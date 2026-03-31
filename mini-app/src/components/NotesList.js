@@ -22,7 +22,12 @@ function NotesList({ notes, onDeleteNote, onAddNote }) {
   };
 
   const getTypeLabel = (type) => {
-    return type === 'homework' ? 'Домашнее задание' : 'Контрольная';
+    switch (type) {
+      case 'homework': return 'Домашнее задание';
+      case 'test': return 'Контрольная';
+      case 'practice': return 'Практика';
+      default: return type;
+    }
   };
 
   return (
@@ -123,6 +128,10 @@ function NotesList({ notes, onDeleteNote, onAddNote }) {
                   <label className="type-option">
                     <input type="radio" name="type" value="test" />
                     <span>📝 Контрольная</span>
+                  </label>
+                  <label className="type-option type-practice">
+                    <input type="radio" name="type" value="practice" />
+                    <span>🔧 Практика</span>
                   </label>
                 </div>
               </div>
