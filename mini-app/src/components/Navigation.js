@@ -32,7 +32,8 @@ function Navigation({ isOpen, onClose, onSectionSelect, activeSection }) {
         </div>
         
         <div className="nav-footer">
-          <p>Study Planner v1.0</p>
+          <p>разработано студентами ИС1-15</p>
+          <p>Лапшиным Д и Лебедевым И</p>
         </div>
       </nav>
     </>
