@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Navigation from './components/Navigation';
 import NotesList from './components/NotesList';
 import Calculator from './components/Calculator';
+import Settings from './components/Settings';
 import { useTelegramId } from './hooks/useTelegramId';
 import api from './services/api';
 import './index.css';
@@ -72,7 +73,7 @@ function App() {
       case 'stats':
         return <Placeholder title="Статистика успеваемости" icon="📊" />;
       case 'settings':
-        return <Placeholder title="Настройки" icon="⚙️" />;
+        return <Settings telegramId={telegramId} />;
       default:
         return (
           <NotesList 
