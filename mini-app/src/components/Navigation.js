@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Navigation({ isOpen, onClose, onSectionSelect, activeSection, userName }) {
+function Navigation({ isOpen, onClose, onSectionSelect, activeSection }) {
   const tools = [
     { id: 'notes', label: 'Мои заметки', icon: '📝' },
     { id: 'calculator', label: 'Калькулятор среднего балла', icon: '🧮' },
@@ -32,7 +32,7 @@ function Navigation({ isOpen, onClose, onSectionSelect, activeSection, userName 
         </div>
         
         <div className="nav-footer">
-          <p>Выполнен вход как {userName || 'Пользователь'}</p>
+          <p>Study Planner v1.0</p>
         </div>
       </nav>
     </>

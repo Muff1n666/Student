@@ -711,27 +711,122 @@ body {
   text-align: center;
 }
 
+/* Мобильные стили (база) - до 767px */
+@media (max-width: 767px) {
+  .header {
+    height: 72px;
+    padding: 0 20px;
+  }
+
+  .header-title h1 {
+    font-size: 1.3rem;
+  }
+
+  .user-greeting {
+    font-size: 0.9rem;
+  }
+
+  .burger-menu {
+    width: 56px;
+    height: 56px;
+  }
+
+  .burger-menu span {
+    width: 26px;
+  }
+
+  .main {
+    padding: 92px 16px 130px;
+  }
+
+  .mobile-nav {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nav-header {
+    padding: 32px 28px;
+  }
+
+  .nav-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .nav-close {
+    width: 52px;
+    height: 52px;
+  }
+
+  .nav-item {
+    padding: 22px 24px;
+    font-size: 1.2rem;
+  }
+
+  .nav-icon {
+    font-size: 2rem;
+  }
+
+  .note-card {
+    padding: 24px;
+    border-left-width: 8px;
+  }
+
+  .note-title {
+    font-size: 1.3rem;
+  }
+
+  .note-content {
+    font-size: 1.05rem;
+  }
+
+  .delete-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+  }
+
+  .fab {
+    width: 72px;
+    height: 72px;
+    font-size: 2.8rem;
+    bottom: 32px;
+    right: 32px;
+  }
+
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* Планшеты и десктоп - от 768px */
 @media (min-width: 768px) {
   .header {
     padding: 0 24px;
   }
 
   .main {
-    padding: 84px 24px 100px;
-    max-width: 800px;
-  }
-
-  .notes-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    padding: 88px 24px 120px;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
   .fab {
     bottom: 32px;
     right: 32px;
-    width: 64px;
-    height: 64px;
-    font-size: 2.5rem;
+    width: 72px;
+    height: 72px;
+    font-size: 2.8rem;
+  }
+
+  .mobile-nav {
+    width: 380px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    max-width: 800px;
   }
 }

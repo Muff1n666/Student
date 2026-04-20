@@ -127,7 +127,6 @@ function App() {
         onClose={closeMenu}
         onSectionSelect={handleSectionSelect}
         activeSection={activeSection}
-        userName={userName}
       />
       
       <main className="main">
