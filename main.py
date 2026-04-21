@@ -4,8 +4,7 @@ import threading
 from telegram.ext import Application, CommandHandler
 from config import BOT_TOKEN
 from handlers.start_handler import start_command
-from handlers.notes_handler import my_notes_command, notes_today_command, stats_command
-from handlers.id_handler import my_id_command
+from handlers.notes_handler import my_notes_command
 from utils.notifications import reminder_scheduler
 
 #Логирование
@@ -36,10 +35,6 @@ def main():
     #Регистрирация команд бота
     application.add_handler(CommandHandler("start", start_command))
     application.add_handler(CommandHandler("mynotes", my_notes_command))
-    application.add_handler(CommandHandler("today", notes_today_command))
-    application.add_handler(CommandHandler("tomorrow", notes_today_command))
-    application.add_handler(CommandHandler("stats", stats_command))
-    application.add_handler(CommandHandler("myid", my_id_command))
     
     #Запуск основного цикл обработки сообщений
     logger.info("🤖 Бот запущен...")
