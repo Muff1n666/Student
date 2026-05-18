@@ -17,23 +17,40 @@ function App() {
 
   const { telegramId, loading: idLoading, error: idError } = useTelegramId();
 
+  console.log('[App] telegramId:', telegramId, 'type:', typeof telegramId);
+  console.log('[App] idLoading:', idLoading, 'idError:', idError);
+
   useEffect(() => {
-    if (!telegramId) return;
+    if (!telegramId) {
+      console.log('[App] telegramId не определен, ждем...');
+      return;
+    }
+
+    console.log('[App] Загрузка данных для пользователя:', telegramId);
     
     const loadUserInfo = async () => {
-      const user = await api.checkUser(telegramId);
-      if (user) {
-        setUserName(user.first_name);
+      try {
+        console.log('[App] Загрузка информации о пользователе...');
+        const user = await api.checkUser(telegramId);
+        console.log('[App] Пользователь:', user);
+        if (user) {
+          setUserName(user.first_name);
+        }
+      } catch (error) {
+        console.error('[App] Ошибка загрузки пользователя:', error);
       }
     };
 
     const loadNotes = async () => {
       setLoading(true);
       try {
+        console.log('[App] Загрузка заметок...');
         const data = await api.getNotes(telegramId);
+        console.log('[App] Загружено заметок:', data.length);
         setNotes(data);
       } catch (error) {
-        console.error('Ошибка загрузки:', error);
+        console.error('[App] Ошибка загрузки заметок:', error);
+        setNotes([]);
       } finally {
         setLoading(false);
       }
@@ -44,16 +61,39 @@ function App() {
   }, [telegramId]);
 
   const handleAddNote = async (noteData) => {
-    const newNote = await api.createNote(telegramId, noteData);
-    setNotes([...notes, newNote]);
+    try {
+      console.log('[App] Создание заметки:', noteData);
+      const newNote = await api.createNote(telegramId, noteData);
+      console.log('[App] Заметка создана, обновляем список...');
+      
+      await loadNotesFresh();
+    } catch (error) {
+      console.error('[App] Ошибка создания заметки:', error);
+      alert(error.message);
+    }
+  };
+
+  const loadNotesFresh = async () => {
+    setLoading(true);
+    try {
+      const data = await api.getNotes(telegramId);
+      setNotes(data);
+      console.log('[App] Список заметок обновлен:', data.length);
+    } catch (error) {
+      console.error('[App] Ошибка обновления списка:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteNote = async (noteId) => {
     if (!window.confirm('Удалить эту заметку?')) return;
     try {
+      console.log('[App] Удаление заметки:', noteId);
       await api.deleteNote(telegramId, noteId);
-      setNotes(notes.filter(n => n.id !== noteId));
+      await loadNotesFresh();
     } catch (error) {
+      console.error('[App] Ошибка удаления:', error);
       alert('Ошибка при удалении');
     }
   };
@@ -132,7 +172,9 @@ function App() {
       
       <main className="main">
         <div className="debug-info">
-          User ID: {telegramId || "Не определен"}
+          <div>User ID: <strong>{telegramId || "Не определен"}</strong></div>
+          <div>Заметок: {notes.length}</div>
+          <div>Загрузка: {loading ? "Да" : "Нет"}</div>
         </div>
         
         {loading ? (
