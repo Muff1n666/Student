@@ -12,7 +12,7 @@ class ApiService {
       const users = await response.json();
       console.log('Пользователи в БД:', users);
       
-      const currentUser = users.find(u => u.telegram_id === parseInt(telegramId));
+      const currentUser = users.find(u => u.telegram_id === telegramId);
       console.log('Текущий пользователь:', currentUser);
       return currentUser;
     } catch (error) {
@@ -55,7 +55,7 @@ class ApiService {
           type: noteData.type,
           content: noteData.content,
           note_date: noteData.date,  
-          telegram_id: parseInt(telegramId)
+          telegram_id: telegramId
         })
       });
       
@@ -96,6 +96,34 @@ class ApiService {
       return true;
     } catch (error) {
       console.error('❌ Ошибка удаления заметки:', error);
+      throw error;
+    }
+  }
+
+  async getSettings(telegramId) {
+    try {
+      const response = await fetch(`${this.baseUrl}/settings/?telegram_id=${telegramId}`);
+      if (response.ok) {
+        return await response.json();
+      }
+      throw new Error('Ошибка загрузки настроек');
+    } catch (error) {
+      console.error('❌ Ошибка загрузки настроек:', error);
+      throw error;
+    }
+  }
+
+  async updateSettings(telegramId, reminderTime) {
+    try {
+      const response = await fetch(`${this.baseUrl}/settings/?telegram_id=${telegramId}&reminder_time=${reminderTime}`, {
+        method: 'PUT'
+      });
+      if (response.ok) {
+        return await response.json();
+      }
+      throw new Error('Ошибка сохранения настроек');
+    } catch (error) {
+      console.error('❌ Ошибка сохранения настроек:', error);
       throw error;
     }
   }

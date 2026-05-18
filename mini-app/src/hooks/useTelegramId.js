@@ -9,11 +9,13 @@ export function useTelegramId() {
     const initTelegram = () => {
       try {
         if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-          const userId = window.Telegram.WebApp.initDataUnsafe.user.id;
-          setTelegramId(String(userId));
-          localStorage.setItem('telegramId', String(userId));
-          setError(null);
-          return true;
+          const userId = parseInt(window.Telegram.WebApp.initDataUnsafe.user.id);
+          if (!isNaN(userId)) {
+            setTelegramId(userId);
+            localStorage.setItem('telegramId', String(userId));
+            setError(null);
+            return true;
+          }
         }
       } catch (e) {
         console.log('Telegram WebApp not available');
@@ -30,13 +32,24 @@ export function useTelegramId() {
     }
 
     if (idFromUrl) {
-      setTelegramId(idFromUrl);
-      localStorage.setItem('telegramId', idFromUrl);
-      setError(null);
+      const parsedId = parseInt(idFromUrl);
+      if (!isNaN(parsedId)) {
+        setTelegramId(parsedId);
+        localStorage.setItem('telegramId', String(parsedId));
+        setError(null);
+      } else {
+        setError('Ошибка получения ID пользователя');
+      }
     } else {
       const savedId = localStorage.getItem('telegramId');
       if (savedId) {
-        setTelegramId(savedId);
+        const parsedSavedId = parseInt(savedId);
+        if (!isNaN(parsedSavedId)) {
+          setTelegramId(parsedSavedId);
+          setError(null);
+        } else {
+          setError('Пожалуйста, откройте приложение через бота Telegram!');
+        }
       } else {
         setError('Пожалуйста, откройте приложение через бота Telegram!');
       }

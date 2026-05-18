@@ -131,6 +131,10 @@ function App() {
       />
       
       <main className="main">
+        <div className="debug-info">
+          User ID: {telegramId || "Не определен"}
+        </div>
+        
         {loading ? (
           <div className="loading-screen">
             <div className="spinner"></div>
