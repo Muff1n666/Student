@@ -8,19 +8,19 @@ function Settings({ telegramId }) {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await api.getSettings(telegramId);
+        setReminderTime(settings.reminder_time);
+      } catch (error) {
+        console.error('Ошибка загрузки настроек:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadSettings();
   }, [telegramId]);
-
-  const loadSettings = async () => {
-    try {
-      const settings = await api.getSettings(telegramId);
-      setReminderTime(settings.reminder_time);
-    } catch (error) {
-      console.error('Ошибка загрузки настроек:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSave = async () => {
     setSaving(true);
