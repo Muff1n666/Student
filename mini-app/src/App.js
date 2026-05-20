@@ -60,19 +60,6 @@ function App() {
     loadNotes();
   }, [telegramId]);
 
-  const handleAddNote = async (noteData) => {
-    try {
-      console.log('[App] Создание заметки:', noteData);
-      const newNote = await api.createNote(telegramId, noteData);
-      console.log('[App] Заметка создана, обновляем список...');
-      
-      await loadNotesFresh();
-    } catch (error) {
-      console.error('[App] Ошибка создания заметки:', error);
-      alert(error.message);
-    }
-  };
-
   const loadNotesFresh = async () => {
     setLoading(true);
     try {
@@ -83,6 +70,18 @@ function App() {
       console.error('[App] Ошибка обновления списка:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddNote = async (noteData) => {
+    try {
+      console.log('[App] Создание заметки:', noteData);
+      await api.createNote(telegramId, noteData);
+      console.log('[App] Заметка создана, обновляем список...');
+      await loadNotesFresh();
+    } catch (error) {
+      console.error('[App] Ошибка создания заметки:', error);
+      alert(error.message);
     }
   };
 
