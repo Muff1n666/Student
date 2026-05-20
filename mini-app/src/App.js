@@ -21,7 +21,7 @@ function App() {
   console.log('[App] idLoading:', idLoading, 'idError:', idError);
 
   useEffect(() => {
-    if (!telegramId) {
+    if (telegramId === null || telegramId === undefined) {
       console.log('[App] telegramId не определен, ждем...');
       return;
     }

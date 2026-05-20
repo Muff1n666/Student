@@ -10,7 +10,7 @@ export function useTelegramId() {
       try {
         if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
           const userId = parseInt(window.Telegram.WebApp.initDataUnsafe.user.id);
-          if (!isNaN(userId)) {
+          if (!isNaN(userId) && userId > 0) {
             setTelegramId(userId);
             localStorage.setItem('telegramId', String(userId));
             setError(null);
@@ -33,7 +33,7 @@ export function useTelegramId() {
 
     if (idFromUrl) {
       const parsedId = parseInt(idFromUrl);
-      if (!isNaN(parsedId)) {
+      if (!isNaN(parsedId) && parsedId > 0) {
         setTelegramId(parsedId);
         localStorage.setItem('telegramId', String(parsedId));
         setError(null);
@@ -44,10 +44,11 @@ export function useTelegramId() {
       const savedId = localStorage.getItem('telegramId');
       if (savedId) {
         const parsedSavedId = parseInt(savedId);
-        if (!isNaN(parsedSavedId)) {
+        if (!isNaN(parsedSavedId) && parsedSavedId > 0) {
           setTelegramId(parsedSavedId);
           setError(null);
         } else {
+          localStorage.removeItem('telegramId');
           setError('Пожалуйста, откройте приложение через бота Telegram!');
         }
       } else {
