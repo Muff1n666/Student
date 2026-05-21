@@ -5,6 +5,7 @@ from telegram.ext import Application, CommandHandler
 from config import BOT_TOKEN
 from handlers.start_handler import start_command
 from handlers.notes_handler import my_notes_command
+from handlers.link_handler import link_command
 from utils.notifications import reminder_scheduler
 
 #Логирование
@@ -35,6 +36,7 @@ def main():
     #Регистрирация команд бота
     application.add_handler(CommandHandler("start", start_command))
     application.add_handler(CommandHandler("mynotes", my_notes_command))
+    application.add_handler(CommandHandler("link", link_command))
     
     #Запуск основного цикл обработки сообщений
     logger.info("🤖 Бот запущен...")

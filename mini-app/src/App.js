@@ -4,97 +4,38 @@ import Navigation from './components/Navigation';
 import NotesList from './components/NotesList';
 import Calculator from './components/Calculator';
 import Settings from './components/Settings';
-import { useTelegramId } from './hooks/useTelegramId';
+import LoginPage from './components/pages/LoginPage';
+import { AuthProvider, useAuth } from './AuthContext';
 import api from './services/api';
 import './index.css';
 
-function App() {
+function AppContent() {
+  const { user, loading: authLoading, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('notes');
-  const [userName, setUserName] = useState('');
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { telegramId, loading: idLoading, error: idError } = useTelegramId();
-
-  console.log('[App] telegramId:', telegramId, 'type:', typeof telegramId);
-  console.log('[App] idLoading:', idLoading, 'idError:', idError);
-
   useEffect(() => {
-    if (telegramId === null || telegramId === undefined) {
-      console.log('[App] telegramId не определен, ждем...');
-      return;
-    }
-
-    console.log('[App] Загрузка данных для пользователя:', telegramId);
-    
-    const loadUserInfo = async () => {
-      try {
-        console.log('[App] Загрузка информации о пользователе...');
-        const user = await api.checkUser(telegramId);
-        console.log('[App] Пользователь:', user);
-        if (user) {
-          setUserName(user.first_name);
-        }
-      } catch (error) {
-        console.error('[App] Ошибка загрузки пользователя:', error);
-      }
-    };
-
-    const loadNotes = async () => {
-      setLoading(true);
-      try {
-        console.log('[App] Загрузка заметок...');
-        const data = await api.getNotes(telegramId);
-        console.log('[App] Загружено заметок:', data.length);
-        setNotes(data);
-      } catch (error) {
-        console.error('[App] Ошибка загрузки заметок:', error);
-        setNotes([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserInfo();
-    loadNotes();
-  }, [telegramId]);
-
-  const loadNotesFresh = async () => {
+    if (!user) return;
     setLoading(true);
-    try {
-      const data = await api.getNotes(telegramId);
-      setNotes(data);
-      console.log('[App] Список заметок обновлен:', data.length);
-    } catch (error) {
-      console.error('[App] Ошибка обновления списка:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    api.getNotes()
+      .then(data => setNotes(data))
+      .catch(() => setNotes([]))
+      .finally(() => setLoading(false));
+  }, [user]);
 
   const handleAddNote = async (noteData) => {
-    try {
-      console.log('[App] Создание заметки:', noteData);
-      await api.createNote(telegramId, noteData);
-      console.log('[App] Заметка создана, обновляем список...');
-      await loadNotesFresh();
-    } catch (error) {
-      console.error('[App] Ошибка создания заметки:', error);
-      alert(error.message);
-    }
+    await api.createNote(noteData);
+    const data = await api.getNotes();
+    setNotes(data);
   };
 
   const handleDeleteNote = async (noteId) => {
     if (!window.confirm('Удалить эту заметку?')) return;
-    try {
-      console.log('[App] Удаление заметки:', noteId);
-      await api.deleteNote(telegramId, noteId);
-      await loadNotesFresh();
-    } catch (error) {
-      console.error('[App] Ошибка удаления:', error);
-      alert('Ошибка при удалении');
-    }
+    await api.deleteNote(noteId);
+    const data = await api.getNotes();
+    setNotes(data);
   };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -112,10 +53,10 @@ function App() {
       case 'stats':
         return <Placeholder title="Статистика успеваемости" icon="📊" />;
       case 'settings':
-        return <Settings telegramId={telegramId} />;
+        return <Settings />;
       default:
         return (
-          <NotesList 
+          <NotesList
             notes={notes}
             onAddNote={handleAddNote}
             onDeleteNote={handleDeleteNote}
@@ -134,7 +75,7 @@ function App() {
     );
   }
 
-  if (idLoading) {
+  if (authLoading) {
     return (
       <div className="loading-screen">
         <div className="spinner"></div>
@@ -143,39 +84,33 @@ function App() {
     );
   }
 
-  if (idError) {
-    return (
-      <div className="error-screen">
-        <span className="error-icon">⚠️</span>
-        <h2>Ошибка</h2>
-        <p>{idError}</p>
-        <button onClick={() => window.location.reload()}>Повторить</button>
-      </div>
-    );
+  if (!user) {
+    return <LoginPage />;
   }
 
   return (
     <div className="app">
-      <Header 
-        userName={userName} 
+      <Header
+        userName={user.first_name}
         onMenuToggle={toggleMenu}
         isMenuOpen={isMenuOpen}
+        onLogout={logout}
       />
-      
-      <Navigation 
-        isOpen={isMenuOpen} 
+
+      <Navigation
+        isOpen={isMenuOpen}
         onClose={closeMenu}
         onSectionSelect={handleSectionSelect}
         activeSection={activeSection}
       />
-      
+
       <main className="main">
         <div className="debug-info">
-          <div>User ID: <strong>{telegramId || "Не определен"}</strong></div>
+          <div>Email: <strong>{user.email}</strong></div>
           <div>Заметок: {notes.length}</div>
           <div>Загрузка: {loading ? "Да" : "Нет"}</div>
         </div>
-        
+
         {loading ? (
           <div className="loading-screen">
             <div className="spinner"></div>
@@ -185,6 +120,14 @@ function App() {
         )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

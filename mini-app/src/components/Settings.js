@@ -1,101 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../AuthContext';
 import api from '../services/api';
 
-function Settings({ telegramId }) {
-  const [reminderTime, setReminderTime] = useState('23:00');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+function Settings() {
+  const { user, refreshUser } = useAuth();
+  const [telegramId, setTelegramId] = useState('');
   const [message, setMessage] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const settings = await api.getSettings(telegramId);
-        setReminderTime(settings.reminder_time);
-      } catch (error) {
-        console.error('Ошибка загрузки настроек:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSettings();
-  }, [telegramId]);
-
-  const handleSave = async () => {
+  const handleLinkTelegram = async () => {
+    if (!telegramId.trim()) return;
     setSaving(true);
     setMessage('');
     try {
-      await api.updateSettings(telegramId, reminderTime);
-      setMessage('Настройки сохранены!');
-      setTimeout(() => setMessage(''), 3000);
+      const tid = parseInt(telegramId.trim());
+      if (isNaN(tid)) {
+        setMessage('Введите корректный Telegram ID');
+        return;
+      }
+      await api.linkTelegram(tid);
+      await refreshUser();
+      setMessage('Telegram привязан!');
+      setTelegramId('');
     } catch (error) {
-      setMessage('Ошибка сохранения');
+      setMessage(error.message || 'Ошибка привязки');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleTimeChange = (delta) => {
-    const [hours, minutes] = reminderTime.split(':').map(Number);
-    let newHours = hours + delta;
-    if (newHours < 0) newHours = 23;
-    if (newHours > 23) newHours = 0;
-    const newTime = `${String(newHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-    setReminderTime(newTime);
-  };
-
-  if (loading) {
-    return (
-      <div className="settings-loading">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="settings">
       <div className="settings-card">
         <h2>Настройки</h2>
-        
+
         <div className="settings-section">
-          <h3>⏰ Время уведомлений</h3>
+          <h3>🔗 Привязка Telegram</h3>
           <p className="settings-description">
-            Выберите время, когда бот будет отправлять напоминания о завтрашних заметках
+            Привяжите Telegram, чтобы получать уведомления о заметках в боте.
+            Ваш Telegram ID можно узнать у бота: @userinfobot
           </p>
 
-          <div className="time-picker">
-            <button 
-              className="time-btn"
-              onClick={() => handleTimeChange(-1)}
-            >
-              −
-            </button>
-            
-            <div className="time-display">
-              <input
-                type="time"
-                value={reminderTime}
-                onChange={(e) => setReminderTime(e.target.value)}
-                className="time-input"
-              />
+          {user.telegram_linked ? (
+            <div className="telegram-linked">
+              <p>✅ Telegram привязан (ID: {user.telegram_id})</p>
             </div>
-            
-            <button 
-              className="time-btn"
-              onClick={() => handleTimeChange(1)}
-            >
-              +
-            </button>
-          </div>
-
-          <button 
-            className="save-btn"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? 'Сохранение...' : 'Сохранить'}
-          </button>
+          ) : (
+            <div className="telegram-link-form">
+              <input
+                type="text"
+                value={telegramId}
+                onChange={(e) => setTelegramId(e.target.value)}
+                placeholder="Введите Telegram ID"
+                className="telegram-input"
+              />
+              <button
+                className="save-btn"
+                onClick={handleLinkTelegram}
+                disabled={saving}
+              >
+                {saving ? 'Сохранение...' : 'Привязать'}
+              </button>
+            </div>
+          )}
 
           {message && (
             <div className={`settings-message ${message.includes('Ошибка') ? 'error' : 'success'}`}>
@@ -105,17 +72,14 @@ function Settings({ telegramId }) {
         </div>
       </div>
 
-      <div className="warning-banner">
-        ⚠️ Внимание! Функция находится в разработке и может работать нестабильно.
+      <div className="settings-card">
+        <h3>ℹ️ Аккаунт</h3>
+        <p>Email: {user.email}</p>
+        <p>Имя: {user.first_name || '—'}</p>
       </div>
 
-      <div className="settings-card info-card">
-        <h3>ℹ️ Как это работает</h3>
-        <ul>
-          <li>Бот отправляет напоминание в выбранное время</li>
-          <li>Напоминание приходит накануне каждой заметки</li>
-          <li>Время сохраняется автоматически</li>
-        </ul>
+      <div className="warning-banner">
+        ⚠️ Внимание! Функция находится в разработке и может работать нестабильно.
       </div>
     </div>
   );
