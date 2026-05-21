@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -10,24 +9,6 @@ from api.auth import hash_password, verify_password, create_access_token, get_cu
 from utils.notifications import send_note_created_notification
 
 router = APIRouter()
-
-
-@router.options("/notes/{note_id}")
-async def options_note():
-    return JSONResponse(content={}, headers={
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    })
-
-
-@router.options("/auth/{path:path}")
-async def options_auth():
-    return JSONResponse(content={}, headers={
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Access-Control-Allow-Methods": "POST, GET, PUT, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    })
 
 
 @router.post("/auth/register", response_model=api_models.TokenResponse)
