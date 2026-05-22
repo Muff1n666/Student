@@ -30,6 +30,10 @@ class ApiService {
   }
 
   // Auth
+  guestLogin() {
+    return this.request('POST', '/auth/guest');
+  }
+
   login(email, password) {
     return this.request('POST', '/auth/login', { email, password });
   }

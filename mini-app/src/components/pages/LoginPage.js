@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../AuthContext';
 
 function LoginPage() {
-  const { login, register } = useAuth();
+  const { guestLogin, login, register } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,6 +23,16 @@ function LoginPage() {
     } catch (err) {
       setError(err.message || 'Ошибка');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuest = async () => {
+    setLoading(true);
+    try {
+      await guestLogin();
+    } catch (err) {
+      setError(err.message || 'Ошибка');
       setLoading(false);
     }
   };
@@ -78,6 +88,18 @@ function LoginPage() {
             {loading ? 'Подождите...' : isRegister ? 'Зарегистрироваться' : 'Войти'}
           </button>
         </form>
+
+        <div className="login-divider">
+          <span>или</span>
+        </div>
+
+        <button
+          className="btn btn-guest btn-full"
+          onClick={handleGuest}
+          disabled={loading}
+        >
+          👤 Войти как гость
+        </button>
 
         <div className="login-footer">
           <button

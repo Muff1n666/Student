@@ -1050,6 +1050,35 @@ body {
   text-decoration: underline;
 }
 
+.login-divider {
+  text-align: center;
+  margin: 16px 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.btn-guest {
+  background: var(--bg);
+  color: var(--text);
+  border: 2px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.btn-guest:hover {
+  background: var(--border);
+}
+
 .error-message {
   background: #fee2e2;
   color: #dc2626;
@@ -1102,6 +1131,31 @@ body {
 .telegram-input:focus {
   outline: none;
   border-color: var(--primary);
+}
+
+.guest-banner {
+  background: #eef2ff;
+  border: 1px solid #6366f1;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  color: #4338ca;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.guest-banner p:first-child {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.guest-block {
+  padding: 16px;
+  background: #fef3c7;
+  border-radius: 12px;
+  color: #92400e;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 /* Warning Banner */

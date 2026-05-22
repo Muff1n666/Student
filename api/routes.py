@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from uuid import uuid4
 
 from database.db import get_db
 from database import models
@@ -26,6 +27,22 @@ async def register(data: api_models.RegisterRequest, db: Session = Depends(get_d
     db.commit()
     db.refresh(user)
 
+    token = create_access_token(user.id)
+    return api_models.TokenResponse(
+        access_token=token,
+        user=api_models.UserResponse.model_validate(user),
+    )
+
+
+@router.post("/auth/guest", response_model=api_models.TokenResponse)
+async def guest_login(db: Session = Depends(get_db)):
+    guest_id = str(uuid4())[:8]
+    user = models.User(
+        first_name=f"Guest_{guest_id}",
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
     token = create_access_token(user.id)
     return api_models.TokenResponse(
         access_token=token,

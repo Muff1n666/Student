@@ -45,14 +45,17 @@ class UserResponse(BaseModel):
     first_name: Optional[str] = None
     telegram_id: Optional[int] = None
     telegram_linked: bool = False
+    is_guest: bool = False
 
     @model_validator(mode="before")
     @classmethod
-    def set_telegram_linked(cls, data):
+    def set_computed(cls, data):
         if isinstance(data, dict):
             data["telegram_linked"] = bool(data.get("telegram_id"))
+            data["is_guest"] = data.get("email") is None
         else:
             data.telegram_linked = bool(data.telegram_id)
+            data.is_guest = data.email is None
         return data
 
     class Config:

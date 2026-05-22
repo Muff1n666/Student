@@ -34,6 +34,13 @@ function Settings() {
       <div className="settings-card">
         <h2>Настройки</h2>
 
+        {user.is_guest && (
+          <div className="guest-banner">
+            <p>👤 Вы используете приложение как гость</p>
+            <p>Зарегистрируйтесь, чтобы привязать Telegram и получать уведомления</p>
+          </div>
+        )}
+
         <div className="settings-section">
           <h3>🔗 Привязка Telegram</h3>
           <p className="settings-description">
@@ -41,7 +48,11 @@ function Settings() {
             Ваш Telegram ID можно узнать у бота: @userinfobot
           </p>
 
-          {user.telegram_linked ? (
+          {user.is_guest ? (
+            <div className="guest-block">
+              <p>Для привязки Telegram необходимо <strong>зарегистрироваться</strong> (Настройки → Выйти → Зарегистрироваться)</p>
+            </div>
+          ) : user.telegram_linked ? (
             <div className="telegram-linked">
               <p>✅ Telegram привязан (ID: {user.telegram_id})</p>
             </div>
@@ -74,7 +85,8 @@ function Settings() {
 
       <div className="settings-card">
         <h3>ℹ️ Аккаунт</h3>
-        <p>Email: {user.email}</p>
+        <p>Тип: {user.is_guest ? '👤 Гость' : '📧 Зарегистрированный пользователь'}</p>
+        <p>Email: {user.email || '—'}</p>
         <p>Имя: {user.first_name || '—'}</p>
       </div>
 
