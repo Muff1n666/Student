@@ -9,7 +9,19 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const isGuest = localStorage.getItem('isGuest') === 'true';
+
+    if (isGuest) {
+      setUser({
+        id: 'guest',
+        is_guest: true,
+        first_name: 'Гость',
+        email: null,
+        telegram_linked: false,
+        telegram_id: null,
+      });
+      setLoading(false);
+    } else if (token) {
       api.setToken(token);
       api.getMe()
         .then(setUser)
@@ -23,11 +35,16 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const guestLogin = async () => {
-    const res = await api.guestLogin();
-    localStorage.setItem('token', res.access_token);
-    api.setToken(res.access_token);
-    setUser(res.user);
+  const guestLogin = () => {
+    localStorage.setItem('isGuest', 'true');
+    setUser({
+      id: 'guest',
+      is_guest: true,
+      first_name: 'Гость',
+      email: null,
+      telegram_linked: false,
+      telegram_id: null,
+    });
   };
 
   const login = async (email, password) => {
@@ -46,6 +63,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('isGuest');
     api.setToken(null);
     setUser(null);
   };

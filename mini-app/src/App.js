@@ -7,6 +7,7 @@ import Settings from './components/Settings';
 import LoginPage from './components/pages/LoginPage';
 import { AuthProvider, useAuth } from './AuthContext';
 import api from './services/api';
+import { guestGetNotes, guestCreateNote, guestDeleteNote } from './utils/localStorage';
 import './index.css';
 
 function AppContent() {
@@ -16,26 +17,38 @@ function AppContent() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const isGuest = user?.is_guest;
+
   useEffect(() => {
     if (!user) return;
     setLoading(true);
-    api.getNotes()
-      .then(data => setNotes(data))
-      .catch(() => setNotes([]))
-      .finally(() => setLoading(false));
-  }, [user]);
+    const load = isGuest ? guestGetNotes() : api.getNotes();
+    load.then(data => setNotes(data)).catch(() => setNotes([])).finally(() => setLoading(false));
+  }, [user, isGuest]);
 
   const handleAddNote = async (noteData) => {
-    await api.createNote(noteData);
-    const data = await api.getNotes();
-    setNotes(data);
+    if (isGuest) {
+      await guestCreateNote(noteData);
+      const data = await guestGetNotes();
+      setNotes(data);
+    } else {
+      await api.createNote(noteData);
+      const data = await api.getNotes();
+      setNotes(data);
+    }
   };
 
   const handleDeleteNote = async (noteId) => {
     if (!window.confirm('Удалить эту заметку?')) return;
-    await api.deleteNote(noteId);
-    const data = await api.getNotes();
-    setNotes(data);
+    if (isGuest) {
+      await guestDeleteNote(noteId);
+      const data = await guestGetNotes();
+      setNotes(data);
+    } else {
+      await api.deleteNote(noteId);
+      const data = await api.getNotes();
+      setNotes(data);
+    }
   };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -106,9 +119,8 @@ function AppContent() {
 
       <main className="main">
         <div className="debug-info">
-          <div>Email: <strong>{user.email}</strong></div>
+          <div>{isGuest ? '👤 Гость' : `Email: ${user.email}`}</div>
           <div>Заметок: {notes.length}</div>
-          <div>Загрузка: {loading ? "Да" : "Нет"}</div>
         </div>
 
         {loading ? (
