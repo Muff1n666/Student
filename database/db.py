@@ -3,8 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import DATABASE_URL
 
-#Пример строки подключения для локальной SQLite:
-#DATABASE_URL = "sqlite:///study_planner.db"
 engine = create_engine(
     DATABASE_URL, 
     connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
